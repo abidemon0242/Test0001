@@ -19,7 +19,7 @@
 <body>
 
 <!-- LOGO: defined once here and reused with <use href="#mark">. Edit this symbol to change the logo. -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7cb7ff"/><stop offset="1" stop-color="#2563eb"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs><symbol id="mark" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#060b16"/><path d="M6 26h6l8-20h-6l-8 20Zm6-6h4l-2-5-2 5Z" fill="url(#g)"/></symbol></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7cb7ff"/><stop offset="1" stop-color="#2563eb"/><stop[...]
 
 <!-- INTRO: ends by itself after ~3s, can be skipped, and is removed for reduced-motion users (see main.js) -->
 <div id="intro">
@@ -57,7 +57,7 @@
           <a class="btn" href="#order" data-i18n="cta_order">Order a Website</a>
           <a class="btn ghost" href="#projects" data-i18n="cta_work">View My Work</a>
         </div>
-        <p class="mini rv d3"><span data-i18n="or">Or reach me directly:</span> <a data-c="call" data-i18n="call">Call</a> <a data-c="wa" target="_blank" rel="noopener" data-i18n="wa">WhatsApp</a> <a data-c="mail" data-i18n="mail">Email</a></p>
+        <p class="mini rv d3"><span data-i18n="or">Or reach me directly:</span> <a data-c="call" data-i18n="call">Call</a> <a data-c="wa" target="_blank" rel="noopener" data-i18n="wa">WhatsApp</a> <a[...] 
         <p class="pill rv d3" data-i18n="pill">Introductory pricing available</p>
       </div>
       <div class="stack" id="hstack" aria-hidden="true"></div>
@@ -165,6 +165,328 @@
 
 <!-- Future AI chatbot mounts here (see README). Intentionally empty for now. -->
 <div id="chatbot-root"></div>
+
+<style>
+  #chat-widget {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    font-family: 'Manrope', Arial, sans-serif;
+  }
+
+  #chat-box {
+    display: flex;
+    flex-direction: column;
+    width: min(360px, calc(100vw - 24px));
+    height: min(470px, calc(100vh - 120px));
+    background: rgba(8, 13, 22, 0.96);
+    border: 1px solid rgba(124, 183, 255, 0.25);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+  }
+
+  #chat-box.hidden {
+    display: none;
+  }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #0f172a, #1d4ed8);
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .chat-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    font-size: 0.96rem;
+  }
+
+  .chat-brand-mark {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #7cb7ff, #2563eb);
+    display: inline-block;
+    box-shadow: 0 0 15px rgba(124, 183, 255, 0.6);
+  }
+
+  .chat-close {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  #messages {
+    flex: 1;
+    padding: 12px 12px 8px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: linear-gradient(180deg, rgba(12,18,29,0.98) 0%, rgba(9,12,20,0.98) 100%);
+  }
+
+  .msg {
+    max-width: 82%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    border-bottom-right-radius: 5px;
+  }
+
+  .msg.bot {
+    align-self: flex-start;
+    background: rgba(148, 163, 184, 0.12);
+    color: #edf3ff;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-bottom-left-radius: 5px;
+  }
+
+  .msg.loader {
+    align-self: flex-start;
+    background: rgba(148, 163, 184, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    color: #e5ecff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .msg.loader::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #7cb7ff;
+    box-shadow: 0 0 12px rgba(124, 183, 255, 0.9);
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  .chat-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px 10px;
+    background: rgba(15,23,42,0.96);
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+  }
+
+  #user-input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.9);
+    color: #edf3ff;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 0.92rem;
+    outline: none;
+  }
+
+  #user-input::placeholder {
+    color: rgba(203, 213, 225, 0.7);
+  }
+
+  #chat-send {
+    border: none;
+    background: linear-gradient(135deg, #7cb7ff, #2563eb);
+    color: white;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(37,99,235,0.3);
+  }
+
+  #chat-toggle {
+    border: none;
+    background: linear-gradient(135deg, #7cb7ff, #2563eb);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    box-shadow: 0 14px 28px rgba(37,99,235,0.26);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  #chat-toggle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 32px rgba(37,99,235,0.34);
+  }
+
+  @media (max-width: 640px) {
+    #chat-widget {
+      right: 12px;
+      bottom: 12px;
+    }
+
+    #chat-box {
+      width: min(92vw, 360px);
+      height: min(68vh, 420px);
+    }
+
+    #chat-toggle {
+      padding: 11px 16px;
+      font-size: 0.92rem;
+    }
+  }
+</style>
+
+<script>
+  const BACKEND_URL = 'https://test0001-abidemon0242s-projects.vercel.app/api/chat';
+
+  function appendMessage(text, sender) {
+    const messages = document.getElementById('messages');
+    const message = document.createElement('div');
+    message.className = `msg ${sender}`;
+    message.textContent = text;
+    messages.appendChild(message);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function setLoading(isLoading) {
+    const loading = document.getElementById('loading-msg');
+    if (!loading) return;
+    loading.style.display = isLoading ? 'inline-flex' : 'none';
+  }
+
+  function toggleChat(forceOpen) {
+    const chatBox = document.getElementById('chat-box');
+    const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : chatBox.classList.contains('hidden');
+
+    chatBox.classList.toggle('hidden', !shouldOpen);
+
+    if (shouldOpen) {
+      const input = document.getElementById('user-input');
+      setTimeout(() => input && input.focus(), 50);
+    }
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    appendMessage(text, 'user');
+    input.value = '';
+
+    const loading = document.createElement('div');
+    loading.id = 'loading-msg';
+    loading.className = 'msg bot loader';
+    loading.textContent = 'Thinking...';
+    document.getElementById('messages').appendChild(loading);
+    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+      const reply = data.reply || data.response || data.answer || 'Sorry, I could not process that request.';
+
+      if (loading && loading.parentNode) {
+        loading.parentNode.removeChild(loading);
+      }
+
+      appendMessage(reply, 'bot');
+    } catch (error) {
+      if (loading && loading.parentNode) {
+        loading.parentNode.removeChild(loading);
+      }
+      appendMessage('I could not reach the chat service right now. Please try again in a moment.', 'bot');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const chatBox = document.getElementById('chat-box');
+    const toggleBtn = document.getElementById('chat-toggle');
+    const closeBtn = document.getElementById('chat-close');
+    const sendBtn = document.getElementById('chat-send');
+    const input = document.getElementById('user-input');
+
+    chatBox.classList.add('hidden');
+
+    toggleBtn.addEventListener('click', function () {
+      toggleChat();
+    });
+
+    closeBtn.addEventListener('click', function () {
+      toggleChat(false);
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    const welcome = 'Hi! I can help with website packages, pricing, timelines, and your project idea. Ask me anything.';
+    appendMessage(welcome, 'bot');
+
+    setTimeout(function () {
+      if (window.innerWidth > 640) {
+        toggleChat(true);
+      }
+    }, 1800);
+  });
+</script>
+
+<div id="chat-widget" aria-live="polite">
+  <div id="chat-box" class="hidden">
+    <div class="chat-header">
+      <div class="chat-brand"><span class="chat-brand-mark"></span> Sales Assistant</div>
+      <button id="chat-close" type="button" class="chat-close" aria-label="Close chat">×</button>
+    </div>
+    <div id="messages"></div>
+    <div class="chat-input-row">
+      <input id="user-input" type="text" placeholder="Ask a question..." aria-label="Type your message" />
+      <button id="chat-send" type="button">Send</button>
+    </div>
+  </div>
+  <button id="chat-toggle" type="button">💬 Chat with Us</button>
+</div>
 
 <script src="language.js" defer></script>
 <script src="order.js" defer></script>
