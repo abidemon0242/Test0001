@@ -3,68 +3,76 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  const { message } = req.body;
-  const userQuery = message.toLowerCase();
-
-  // --- BUSINESS PRICING & REQUIREMENTS LOGIC ---
-  let estimatedPriceRange = "";
-  
-  if (userQuery.includes('one page') || userQuery.includes('single page') || userQuery.includes('no logo') || userQuery.includes('basic')) {
-    estimatedPriceRange = "around 2,500 BDT";
-  } else if (userQuery.includes('advanced') || userQuery.includes('custom features') || userQuery.includes('e-commerce') || userQuery.includes('portal')) {
-    estimatedPriceRange = "between 7,000 to 9,500 BDT (including an AI chatbot)";
-  } else if (userQuery.includes('chatbot') || userQuery.includes('ai') || userQuery.includes('standard')) {
-    estimatedPriceRange = "between 5,000 to 7,000 BDT (with AI chatbot integration)";
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
   }
 
-  // --- SYSTEM PROMPT (Persuasion + Pricing Estimation) ---
-  const salesPrompt = `
-You are an expert sales consultant for our web development service.
-Our exact pricing packages:
-1. Basic 1-Page Website (No Logo): 2,500 BDT
-2. Standard Website with AI Chatbot: 5,000 BDT - 7,000 BDT
-3. Advanced Custom Website with AI Chatbot: 7,000 BDT - 9,500 BDT
+  if (req.method !== 'POST') {
+    return res.status(405).json({ reply: 'Method not allowed.' });
+  }
 
-GUIDELINES:
-- Understand customer requirements (features, pages, AI needs).
-- Based on their requirements, offer a friendly ESTIMATE (e.g., "Based on what you need, your estimated package will be around...").
-- Always clarify: "This is an estimated price range—our lead developer will review your exact requirements and confirm the final fixed price."
-- Persuade using value and trust. Keep responses concise (2-3 sentences max) and end with 1 engaging question to gather more project details or offer a call.
+  const message = String(req.body?.message || '').trim();
+
+  if (!message) {
+    return res.status(400).json({ reply: 'Please type a message first.' });
+  }
+
+  if (!process.env.OPENAI_API_KEY) {
+    console.error('OPENAI_API_KEY is missing from Vercel environment variables.');
+    return res.status(500).json({ reply: 'The chat service is not configured yet. Please contact us directly by WhatsApp or email.' });
+  }
+
+  const salesPrompt = `
+You are the friendly, persuasive sales assistant for Abid's Web Studio, an independent web developer in Bangladesh.
+
+Your job is to help visitors choose and order a website. Be confident, helpful, concise, and honest. Never use deceptive, aggressive, or threatening pressure. Create gentle urgency by explaining that introductory pricing is limited and availability may change, without inventing deadlines or pretending there are other buyers.
+
+Services and estimated packages:
+- Basic 1-page website: around 2,500 BDT.
+- Standard website with AI chatbot: 5,000-7,000 BDT.
+- Advanced custom website with AI chatbot: 7,000-9,500 BDT.
+
+These are estimates, not guaranteed final prices. The developer confirms the final price after reviewing the requirements. Website design and development are included; payment processing and hosting are not included unless separately agreed.
+
+Ask one useful follow-up question at the end. When the visitor shows buying intent, guide them to the website order form or direct contact options. Mention WhatsApp or email only when useful. Keep replies to 2-4 short sentences and use BDT for prices.
 `;
 
   try {
-    let reply = "";
-
-    // Route to ChatGPT (gpt-4o-mini) for handling complex requirements and estimates
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: salesPrompt },
-          { role: 'user', content: `[SYSTEM NOTE: Calculated context estimate: ${estimatedPriceRange}]\nUser message: ${message}` }
+          { role: 'user', content: message }
         ],
-        temperature: 0.7
+        temperature: 0.7,
+        max_tokens: 220
       })
     });
 
-    const data = await response.json();
-    reply = data.choices[0].message.content;
+    const data = await openAIResponse.json();
 
-    // --- LOGGING FOR YOU TO REVIEW ALL CHATS ---
+    if (!openAIResponse.ok) {
+      console.error('OpenAI API error:', openAIResponse.status, data);
+      return res.status(502).json({ reply: 'I am having trouble connecting right now. Please try again, or contact us directly by WhatsApp or email.' });
+    }
+
+    const reply = data?.choices?.[0]?.message?.content?.trim();
+
+    if (!reply) {
+      console.error('OpenAI returned no reply:', data);
+      return res.status(502).json({ reply: 'I could not prepare a reply right now. Please try again in a moment.' });
+    }
+
     console.log(`[CHAT LOG] Client: ${message} | Bot Output: ${reply}`);
-
     return res.status(200).json({ reply });
-
   } catch (error) {
-    console.error(`[CHAT ERROR]:`, error);
-    return res.status(500).json({ error: 'Failed to process chat response.' });
+    console.error('[CHAT ERROR]:', error);
+    return res.status(500).json({ reply: 'I could not reach the chat service right now. Please try again in a moment.' });
   }
-      }
+}
