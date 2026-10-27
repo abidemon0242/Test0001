@@ -16,7 +16,7 @@ import {
 // Replace YOUR_API_KEY with the apiKey shown in Firebase Console.
 // Keep the other values exactly as shown here.
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyBHJcZVTFfKKEpPphQR4IpPzbzrDbo_tkk",
   authDomain: "project-prototype-1-2d8d2.firebaseapp.com",
   projectId: "project-prototype-1-2d8d2",
   storageBucket: "project-prototype-1-2d8d2.firebasestorage.app",
