@@ -658,7 +658,6 @@
     const loginModal = document.getElementById('loginModal');
     const loginBtn = document.getElementById('loginBtn');
     const closeLoginModal = document.getElementById('closeLoginModal');
-
     function openLoginModal() {
       if (loginModal) {
         loginModal.classList.add('show');
@@ -671,3 +670,57 @@
     }
 
     funct
+<script>
+  // Mobile Burger & Login Modal Event Initialization
+  document.addEventListener('DOMContentLoaded', () => {
+    const burger = document.getElementById('burger');
+    const nav = document.getElementById('nav');
+
+    if (burger && nav) {
+      burger.addEventListener('click', () => {
+        const isOpen = nav.classList.toggle('open');
+        burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      nav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          nav.classList.remove('open');
+          burger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    const loginModal = document.getElementById('loginModal');
+    const loginBtn = document.getElementById('loginBtn');
+    const closeLoginModal = document.getElementById('closeLoginModal');
+
+    function openLoginModal() {
+      if (loginModal) {
+        loginModal.classList.add('show');
+        loginModal.setAttribute('aria-hidden', 'false');
+      }
+      if (nav) {
+        nav.classList.remove('open');
+        if (burger) burger.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function closeLoginModalFunc() {
+      if (loginModal) {
+        loginModal.classList.remove('show');
+        loginModal.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    if (loginBtn) loginBtn.addEventListener('click', openLoginModal);
+    if (closeLoginModal) closeLoginModal.addEventListener('click', closeLoginModalFunc);
+
+    if (loginModal) {
+      loginModal.addEventListener('click', (e) => {
+        if (e.target.hasAttribute('data-close')) {
+          closeLoginModalFunc();
+        }
+      });
+    }
+  });
+</script>
