@@ -19,7 +19,15 @@
 </head>
 <body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7cb7ff"/><stop offset="1" stop-color="#2563eb"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs></svg>
+<!-- LOGO: defined once here and reused with <use href="#mark">. Edit this symbol to change the logo. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7cb7ff"/><stop offset="1" stop-color="#2563eb"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs><symbol id="mark" viewBox="0 0 64 64"><path d="M8 18.5C8 13.8 11.8 10 16.5 10h12.2L34 24.7V10h7.5v44H34V39.3L28.7 44H16.5C11.8 44 8 40.2 8 35.5zm30.8 8.2L46 10h10v44H46V34.8l-7.2 10.2H28l11-15.9z" fill="url(#g)"/><path d="M8 18.5C8 13.8 11.8 10 16.5 10h12.2L34 24.7V10h7.5v44H34V39.3L28.7 44H16.5C11.8 44 8 40.2 8 35.5zm30.8 8.2L46 10h10v44H46V34.8l-7.2 10.2H28l11-15.9z" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/></symbol></svg>
+
+<!-- INTRO: ends by itself after ~3s, can be skipped, and is removed for reduced-motion users (see main.js) -->
+<div id="intro">
+  <svg class="mk" width="88" height="88" aria-hidden="true"><use href="#mark"/></svg>
+  <p class="wm">ABID'S <b>WEB STUDIO</b></p>
+  <button id="skip" type="button" data-i18n="skip">Skip intro</button>
+</div>
 
 <header>
   <div class="wrap bar">
@@ -52,6 +60,7 @@
 </div>
 
 <main>
+  <!-- HOME -->
   <section id="home" class="hero">
     <div class="glow"></div>
     <div class="wrap hgrid">
@@ -70,6 +79,7 @@
     </div>
   </section>
 
+  <!-- PROJECTS (cards are generated from PROJECTS in js/main.js) -->
   <section id="projects" class="sec">
     <div class="wrap">
       <h2 class="rv" data-i18n="pj_t"></h2>
@@ -78,6 +88,7 @@
     </div>
   </section>
 
+  <!-- SERVICES (cards are generated from SERVICES in js/main.js) -->
   <section id="services" class="sec light">
     <div class="wrap">
       <h2 class="rv" data-i18n="sv_t"></h2>
@@ -86,6 +97,7 @@
     </div>
   </section>
 
+  <!-- ABOUT -->
   <section id="about" class="sec">
     <div class="wrap abt">
       <div>
@@ -100,6 +112,7 @@
     </div>
   </section>
 
+  <!-- ORDER (fields are built by js/order.js) -->
   <section id="order" class="sec alt">
     <div class="wrap narrow">
       <h2 class="rv" data-i18n="or_t"></h2>
@@ -126,6 +139,7 @@
     </div>
   </section>
 
+  <!-- CONTACT (links are filled from SITE in js/main.js) -->
   <section id="contact" class="sec">
     <div class="wrap">
       <div class="panel cta-panel">
@@ -164,64 +178,423 @@
   </div>
 </footer>
 
+<!-- Future AI chatbot mounts here (see README). Intentionally empty for now. -->
 <div id="chatbot-root"></div>
 
 <style>
-  #chat-widget { position: fixed; right: 20px; bottom: 20px; z-index: 1200; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; font-family: 'Manrope', Arial, sans-serif; }
-  #chat-box { display: flex; flex-direction: column; width: min(360px, calc(100vw - 24px)); height: min(470px, calc(100vh - 120px)); background: rgba(8, 13, 22, 0.96); border: 1px solid rgba(124, 183, 255, 0.25); border-radius: 18px; overflow: hidden; box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35); backdrop-filter: blur(10px); }
-  #chat-box.hidden { display: none; }
-  .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: linear-gradient(135deg, #0f172a, #1d4ed8); color: #fff; border-bottom: 1px solid rgba(255,255,255,0.12); }
-  .chat-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: 0.02em; font-size: 0.96rem; }
-  .chat-brand-mark { width: 18px; height: 18px; border-radius: 6px; background: linear-gradient(135deg, #7cb7ff, #2563eb); display: inline-block; box-shadow: 0 0 15px rgba(124, 183, 255, 0.6); }
-  .chat-close { width: 30px; height: 30px; border: none; border-radius: 50%; background: rgba(255,255,255,0.12); color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer; }
-  #messages { flex: 1; padding: 12px 12px 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(180deg, rgba(12,18,29,0.98) 0%, rgba(9,12,20,0.98) 100%); }
-  .msg { max-width: 82%; padding: 10px 12px; border-radius: 14px; font-size: 0.9rem; line-height: 1.45; word-wrap: break-word; white-space: pre-wrap; }
-  .msg.user { align-self: flex-end; background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; border-bottom-right-radius: 5px; }
-  .msg.bot { align-self: flex-start; background: rgba(148, 163, 184, 0.12); color: #edf3ff; border: 1px solid rgba(148, 163, 184, 0.15); border-bottom-left-radius: 5px; }
-  .msg.loader { align-self: flex-start; background: rgba(148, 163, 184, 0.12); border: 1px solid rgba(148, 163, 184, 0.15); color: #e5ecff; display: inline-flex; align-items: center; gap: 8px; }
-  .msg.loader::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7cb7ff; box-shadow: 0 0 15px rgba(124, 183, 255, 0.9); animation: blink 1s ease-in-out infinite; }
-  @keyframes blink { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
-  .chat-input-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px 10px; background: rgba(15,23,42,0.96); border-top: 1px solid rgba(148, 163, 184, 0.18); }
-  #user-input { flex: 1; min-width: 0; border: 1px solid rgba(148, 163, 184, 0.2); background: rgba(15, 23, 42, 0.9); color: #edf3ff; border-radius: 12px; padding: 10px 12px; font-size: 0.92rem; outline: none; }
-  #user-input::placeholder { color: rgba(203, 213, 225, 0.7); }
-  #chat-send { border: none; background: linear-gradient(135deg, #7cb7ff, #2563eb); color: white; font-weight: 700; padding: 10px 14px; border-radius: 12px; cursor: pointer; box-shadow: 0 10px 22px rgba(37,99,235,0.3); }
-  #chat-toggle { border: none; background: linear-gradient(135deg, #7cb7ff, #2563eb); color: #fff; padding: 12px 18px; border-radius: 999px; cursor: pointer; font-weight: 800; letter-spacing: 0.02em; box-shadow: 0 14px 28px rgba(37,99,235,0.26); transition: transform 0.2s ease, box-shadow 0.2s ease; }
-  #chat-toggle:hover { transform: translateY(-1px); box-shadow: 0 18px 32px rgba(37,99,235,0.34); }
-  .login-btn { border: 1px solid rgba(124, 183, 255, 0.5); background: rgba(124, 183, 255, 0.12); color: #edf3ff; border-radius: 999px; padding: 10px 18px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; white-space: nowrap; }
-  .login-btn:hover { transform: translateY(-1px); background: rgba(124, 183, 255, 0.2); box-shadow: 0 10px 25px rgba(37,99,235,0.18); }
-  .login-menu-btn { margin-left: auto; }
-  #nav { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .login-modal { position: fixed; inset: 0; display: none; place-items: center; z-index: 2000; }
-  .login-modal.show { display: grid; }
-  .login-modal-backdrop { position: absolute; inset: 0; background: rgba(5, 8, 15, 0.72); backdrop-filter: blur(4px); }
-  .login-modal-content { position: relative; z-index: 1; width: min(420px, calc(100vw - 30px)); background: rgba(9, 13, 22, 0.98); border: 1px solid rgba(124, 183, 255, 0.22); border-radius: 18px; box-shadow: 0 25px 55px rgba(0, 0, 0, 0.42); padding: 28px 22px 20px; color: #edf3ff; }
-  .login-modal-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(148, 163, 184, 0.2); background: rgba(148, 163, 184, 0.1); color: #edf3ff; font-size: 1.5rem; line-height: 1; cursor: pointer; }
-  .login-modal-content h2 { margin: 0 0 18px; font-size: 1.7rem; font-weight: 800; letter-spacing: -0.04em; }
-  .login-modal-content input { width: 100%; padding: 13px 14px; border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.25); background: rgba(15, 23, 42, 0.9); color: #edf3ff; font-size: 0.96rem; outline: none; box-sizing: border-box; }
-  .primary-btn { margin-top: 12px; width: 100%; border: none; border-radius: 12px; padding: 13px 16px; background: linear-gradient(135deg, #7cb7ff, #2563eb); color: white; font-weight: 700; font-size: 0.96rem; cursor: pointer; }
-  .login-divider { display: flex; align-items: center; gap: 14px; margin: 20px 0 14px; color: rgba(203, 213, 225, 0.75); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; }
-  .login-divider::before, .login-divider::after { content: ""; height: 1px; background: rgba(148, 163, 184, 0.25); flex: 1; }
-  .google-signin-wrap { width: 100%; min-height: 44px; display: flex; justify-content: center; }
-  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  @media (max-width: 768px) {
-    #nav { display: none; flex-direction: column; align-items: stretch; width: 100%; padding: 14px 0 0; gap: 10px; }
-    #nav.open { display: flex; }
-    #nav > * { width: 100%; text-align: left; }
-    .login-menu-btn { margin-left: 0; order: -1; width: 100%; }
-    .login-btn { justify-content: center; }
+  #chat-widget {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    font-family: 'Manrope', Arial, sans-serif;
   }
-  </style>
-  <script>
+
+  #chat-box {
+    display: flex;
+    flex-direction: column;
+    width: min(360px, calc(100vw - 24px));
+    height: min(470px, calc(100vh - 120px));
+    background: rgba(8, 13, 22, 0.96);
+    border: 1px solid rgba(124, 183, 255, 0.25);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+  }
+
+  #chat-box.hidden {
+    display: none;
+  }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #0f172a, #1d4ed8);
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .chat-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    font-size: 0.96rem;
+  }
+
+  .chat-brand-mark {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #7cb7ff, #2563eb);
+    display: inline-block;
+    box-shadow: 0 0 15px rgba(124, 183, 255, 0.6);
+  }
+
+  .chat-close {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  #messages {
+    flex: 1;
+    padding: 12px 12px 8px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: linear-gradient(180deg, rgba(12,18,29,0.98) 0%, rgba(9,12,20,0.98) 100%);
+  }
+
+  .msg {
+    max-width: 82%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    border-bottom-right-radius: 5px;
+  }
+
+  .msg.bot {
+    align-self: flex-start;
+    background: rgba(148, 163, 184, 0.12);
+    color: #edf3ff;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-bottom-left-radius: 5px;
+  }
+
+  .msg.loader {
+    align-self: flex-start;
+    background: rgba(148, 163, 184, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    color: #e5ecff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .msg.loader::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #7cb7ff;
+    box-shadow: 0 0 15px rgba(124, 183, 255, 0.9);
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  .chat-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px 10px;
+    background: rgba(15,23,42,0.96);
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+  }
+
+  #user-input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.9);
+    color: #edf3ff;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 0.92rem;
+    outline: none;
+  }
+
+  #user-input::placeholder {
+    color: rgba(203, 213, 225, 0.7);
+  }
+
+  #chat-send {
+    border: none;
+    background: linear-gradient(135deg, #7cb7ff, #2563eb);
+    color: white;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(37,99,235,0.3);
+  }
+
+  #chat-toggle {
+    border: none;
+    background: linear-gradient(135deg, #7cb7ff, #2563eb);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    box-shadow: 0 14px 28px rgba(37,99,235,0.26);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  #chat-toggle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 32px rgba(37,99,235,0.34);
+  }
+
+  @media (max-width: 640px) {
+    #chat-widget {
+      right: 12px;
+      bottom: 12px;
+    }
+
+    #chat-box {
+      width: min(92vw, 360px);
+      height: min(68vh, 420px);
+    }
+
+    #chat-toggle {
+      padding: 11px 16px;
+      font-size: 0.92rem;
+    }
+  }
+
+  .login-btn {
+    border: 1px solid rgba(124, 183, 255, 0.5);
+    background: rgba(124, 183, 255, 0.12);
+    color: #edf3ff;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-1px);
+    background: rgba(124, 183, 255, 0.2);
+    box-shadow: 0 10px 25px rgba(37,99,235,0.18);
+  }
+
+  .login-menu-btn {
+    margin-left: auto;
+  }
+
+  #nav {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .login-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    z-index: 2000;
+  }
+
+  .login-modal.show {
+    display: grid;
+  }
+
+  .login-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 8, 15, 0.72);
+    backdrop-filter: blur(4px);
+  }
+
+  .login-modal-content {
+    position: relative;
+    z-index: 1;
+    width: min(420px, calc(100vw - 30px));
+    background: rgba(9, 13, 22, 0.98);
+    border: 1px solid rgba(124, 183, 255, 0.22);
+    border-radius: 18px;
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.42);
+    padding: 28px 22px 20px;
+    color: #edf3ff;
+  }
+
+  .login-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(148, 163, 184, 0.1);
+    color: #edf3ff;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .login-modal-content h2 {
+    margin: 0 0 18px;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .login-modal-content input {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(15, 23, 42, 0.9);
+    color: #edf3ff;
+    font-size: 0.96rem;
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .primary-btn {
+    margin-top: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 16px;
+    background: linear-gradient(135deg, #7cb7ff, #2563eb);
+    color: white;
+    font-weight: 700;
+    font-size: 0.96rem;
+    cursor: pointer;
+  }
+
+  .login-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 20px 0 14px;
+    color: rgba(203, 213, 225, 0.75);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .login-divider::before,
+  .login-divider::after {
+    content: "";
+    height: 1px;
+    background: rgba(148, 163, 184, 0.25);
+    flex: 1;
+  }
+
+  .google-signin-wrap {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .user-login-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(124, 183, 255, 0.4);
+    background: rgba(124, 183, 255, 0.1);
+    border-radius: 999px;
+    padding: 8px 12px;
+    max-width: 100%;
+  }
+
+  .user-login-pill img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 768px) {
+    #nav {
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      padding: 14px 0 0;
+      gap: 10px;
+    }
+
+    #nav.open {
+      display: flex;
+    }
+
+    #nav > * {
+      width: 100%;
+      text-align: left;
+    }
+
+    .login-menu-btn {
+      margin-left: 0;
+      order: -1;
+      width: 100%;
+    }
+
+    .login-btn {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
   const BACKEND_URL = 'https://test0001-abidemon0242s-projects.vercel.app/api/chat';
+  const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+  const USER_STORAGE_KEY = 'webstudioUser';
 
   function appendMessage(text, sender) {
     const messages = document.getElementById('messages');
-    if (!messages) return;
     const message = document.createElement('div');
     message.className = `msg ${sender}`;
     message.textContent = text;
     messages.appendChild(message);
     messages.scrollTop = messages.scrollHeight;
+  }
+
+  function setLoading(isLoading) {
+    const loading = document.getElementById('loading-msg');
+    if (!loading) return;
+    loading.style.display = isLoading ? 'inline-flex' : 'none';
   }
 
   function getLocalReply(message) {
@@ -238,10 +611,24 @@
     return 'I can help with website packages, pricing, timelines, and ordering. What would you like to know?';
   }
 
+  function toggleChat(forceOpen) {
+    const chatBox = document.getElementById('chat-box');
+    const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : chatBox.classList.contains('hidden');
+
+    chatBox.classList.toggle('hidden', !shouldOpen);
+
+    if (shouldOpen) {
+      const input = document.getElementById('user-input');
+      setTimeout(() => input && input.focus(), 50);
+    }
+  }
+
   async function sendMessage() {
     const input = document.getElementById('user-input');
-    const text = input ? input.value.trim() : '';
+    const text = input.value.trim();
+
     if (!text) return;
+
     appendMessage(text, 'user');
     input.value = '';
 
@@ -258,98 +645,251 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text })
       });
-      if (!res.ok) throw new Error(`Backend error: ${res.status}`);
+
+      if (!res.ok) {
+        throw new Error(`Backend error: ${res.status}`);
+      }
+
       const data = await res.json();
       const reply = data.reply || data.response || data.answer || 'Sorry, I could not process that request.';
-      if (loading && loading.parentNode) loading.parentNode.removeChild(loading);
+
+      if (loading && loading.parentNode) {
+        loading.parentNode.removeChild(loading);
+      }
+
       appendMessage(reply, 'bot');
     } catch (error) {
-      if (loading && loading.parentNode) loading.parentNode.removeChild(loading);
+      if (loading && loading.parentNode) {
+        loading.parentNode.removeChild(loading);
+      }
       const localReply = getLocalReply(text);
       appendMessage(localReply, 'bot');
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const burger = document.getElementById('burger');
+  function openLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (!modal) return;
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (!modal) return;
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function updateLoginUI(user) {
+    const loginBtn = document.getElementById('loginBtn');
+    if (!loginBtn) return;
+
+    if (!user) {
+      loginBtn.textContent = 'Login';
+      loginBtn.classList.remove('logged-in');
+      loginBtn.onclick = function () {
+        openLoginModal();
+      };
+      return;
+    }
+
+    loginBtn.classList.add('logged-in');
+    loginBtn.innerHTML = `
+      <span class="user-login-pill">
+        <img src="${user.picture || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || 'User') + '&background=2563eb&color=fff'}" alt="${user.name || 'User'} avatar" />
+        <span>${user.name ? user.name.split(' ')[0] : 'Profile'}</span>
+      </span>
+    `;
+
+    loginBtn.onclick = function () {
+      localStorage.removeItem(USER_STORAGE_KEY);
+      updateLoginUI(null);
+    };
+  }
+
+  function parseJwtToken(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+      return JSON.parse(atob(padded));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function handleCredentialResponse(response) {
+    const payload = parseJwtToken(response.credential);
+    if (!payload) {
+      return;
+    }
+
+    const user = {
+      name: payload.name || payload.given_name || 'Google User',
+      email: payload.email || '',
+      picture: payload.picture || '',
+      sub: payload.sub || '',
+      given_name: payload.given_name || ''
+    };
+
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    updateLoginUI(user);
+    closeLoginModal();
+  }
+
+  function initGoogleSignIn() {
+    const target = document.getElementById('googleSignInBtn');
+    if (!target || !window.google || !window.google.accounts || !window.google.accounts.id) {
+      return;
+    }
+
+    try {
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse
+      });
+
+      window.google.accounts.id.renderButton(target, {
+        theme: 'outline',
+        size: 'large',
+        width: '100%',
+        type: 'standard',
+        text: 'signin_with',
+        shape: 'pill'
+      });
+    } catch (error) {
+      console.warn('Google Sign-In initialization failed:', error);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const chatBox = document.getElementById('chat-box');
+    const toggleBtn = document.getElementById('chat-toggle');
+    const closeBtn = document.getElementById('chat-close');
+    const sendBtn = document.getElementById('chat-send');
+    const input = document.getElementById('user-input');
+    const loginBtn = document.getElementById('loginBtn');
+    const closeLoginModalBtn = document.getElementById('closeLoginModal');
+    const emailContinueBtn = document.getElementById('emailContinueBtn');
+    const modal = document.getElementById('loginModal');
     const nav = document.getElementById('nav');
+    const burger = document.getElementById('burger');
 
     if (burger && nav) {
-      burger.addEventListener('click', () => {
+      burger.addEventListener('click', function () {
         const isOpen = nav.classList.toggle('open');
-        burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      });
-
-      nav.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          nav.classList.remove('open');
-          burger.setAttribute('aria-expanded', 'false');
-        });
+        burger.setAttribute('aria-expanded', String(isOpen));
       });
     }
 
-    const loginModal = document.getElementById('loginModal');
-    const loginBtn = document.getElementById('loginBtn');
-    const closeLoginModal = document.getElementById('closeLoginModal');
-
-    function openLoginModal() {
-      if (loginModal) {
-        loginModal.classList.add('show');
-        loginModal.setAttribute('aria-hidden', 'false');
-      }
-      if (nav) {
-        nav.classList.remove('open');
-        if (burger) burger.setAttribute('aria-expanded', 'false');
-      }
-    }
-
-    function closeLoginModalFunc() {
-      if (loginModal) {
-        loginModal.classList.remove('show');
-        loginModal.setAttribute('aria-hidden', 'true');
+    if (loginBtn) {
+      const savedUser = localStorage.getItem(USER_STORAGE_KEY);
+      if (savedUser) {
+        try {
+          updateLoginUI(JSON.parse(savedUser));
+        } catch (error) {
+          localStorage.removeItem(USER_STORAGE_KEY);
+          updateLoginUI(null);
+        }
+      } else {
+        updateLoginUI(null);
       }
     }
 
-    if (loginBtn) loginBtn.addEventListener('click', openLoginModal);
-    if (closeLoginModal) closeLoginModal.addEventListener('click', closeLoginModalFunc);
-    if (loginModal) {
-      loginModal.addEventListener('click', (e) => {
-        if (e.target.hasAttribute('data-close')) {
-          closeLoginModalFunc();
+    if (modal) {
+      modal.addEventListener('click', function (event) {
+        if (event.target && event.target.dataset && event.target.dataset.close === 'true') {
+          closeLoginModal();
         }
       });
     }
 
-    if (window.google && google.accounts && google.accounts.id) {
-      google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-        callback: handleCredentialResponse
+    if (closeLoginModalBtn) {
+      closeLoginModalBtn.addEventListener('click', closeLoginModal);
+    }
+
+    if (emailContinueBtn) {
+      emailContinueBtn.addEventListener('click', function () {
+        const emailInput = document.getElementById('userEmail');
+        if (!emailInput) return;
+        const emailValue = emailInput.value.trim();
+        if (!emailValue) {
+          emailInput.focus();
+          return;
+        }
+
+        const user = {
+          name: emailValue.split('@')[0],
+          email: emailValue,
+          picture: '',
+          sub: 'email-user'
+        };
+
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+        updateLoginUI(user);
+        closeLoginModal();
       });
-      const googleBtnWrap = document.getElementById('googleSignInBtn');
-      if (googleBtnWrap) {
-        google.accounts.id.renderButton(googleBtnWrap, { theme: 'outline', size: 'large', width: '100%' });
+    }
+
+    if (chatBox) {
+      chatBox.classList.add('hidden');
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function () {
+        toggleChat();
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        toggleChat(false);
+      });
+    }
+
+    if (sendBtn) {
+      sendBtn.addEventListener('click', sendMessage);
+    }
+
+    if (input) {
+      input.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          sendMessage();
+        }
+      });
+    }
+
+    const welcome = 'Hi! I can help with website packages, pricing, timelines, and your project idea. Ask me anything.';
+    appendMessage(welcome, 'bot');
+
+    setTimeout(function () {
+      if (window.innerWidth > 640) {
+        toggleChat(true);
       }
-    }
+    }, 1800);
+
+    initGoogleSignIn();
   });
-
-  function handleCredentialResponse(response) {
-    const responsePayload = parseJwt(response.credential);
-    localStorage.setItem('webstudioUser', JSON.stringify(responsePayload));
-    alert("Successfully logged in as " + responsePayload.name);
-    const loginModal = document.getElementById('loginModal');
-    if (loginModal) loginModal.classList.remove('show');
-  }
-
-  function parseJwt(token) {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      return JSON.parse(window.atob(base64));
-    } catch (e) {
-      return {};
-    }
-  }
 </script>
+
+<div id="chat-widget" aria-live="polite">
+  <div id="chat-box" class="hidden">
+    <div class="chat-header">
+      <div class="chat-brand"><span class="chat-brand-mark"></span> Sales Assistant</div>
+      <button id="chat-close" type="button" class="chat-close" aria-label="Close chat">×</button>
+    </div>
+    <div id="messages"></div>
+    <div class="chat-input-row">
+      <input id="user-input" type="text" placeholder="Ask a question..." aria-label="Type your message" />
+      <button id="chat-send" type="button">Send</button>
+    </div>
+  </div>
+  <button id="chat-toggle" type="button">💬 Chat with Us</button>
+</div>
+
+<script src="language.js" defer></script>
+<script src="order.js" defer></script>
+<script src="main.js" defer></script>
 </body>
 </html>
-
