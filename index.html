@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;600&family=Fraunces:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -40,9 +41,23 @@
       <a href="#contact" data-i18n="n_contact">Contact</a>
       <button id="lang" type="button" aria-label="Language">বাংলা</button>
       <a class="btn sm" href="#order" data-i18n="cta_order">Order a Website</a>
+      <button id="loginBtn" type="button" class="login-btn login-menu-btn">Login</button>
     </nav>
   </div>
 </header>
+
+<div id="loginModal" class="login-modal" aria-hidden="true">
+  <div class="login-modal-backdrop" data-close="true"></div>
+  <div class="login-modal-content" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+    <button id="closeLoginModal" class="login-modal-close" type="button" aria-label="Close login modal">×</button>
+    <h2 id="loginModalTitle">Sign In / Log In</h2>
+    <label class="sr-only" for="userEmail">Email</label>
+    <input type="email" id="userEmail" placeholder="Enter your email" />
+    <button type="button" class="primary-btn" id="emailContinueBtn">Continue with Email</button>
+    <div class="login-divider"><span>OR</span></div>
+    <div id="googleSignInBtn" class="google-signin-wrap"></div>
+  </div>
+</div>
 
 <main>
   <!-- HOME -->
@@ -366,10 +381,206 @@
       font-size: 0.92rem;
     }
   }
+
+  .login-btn {
+    border: 1px solid rgba(124, 183, 255, 0.5);
+    background: rgba(124, 183, 255, 0.12);
+    color: #edf3ff;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-1px);
+    background: rgba(124, 183, 255, 0.2);
+    box-shadow: 0 10px 25px rgba(37,99,235,0.18);
+  }
+
+  .login-menu-btn {
+    margin-left: auto;
+  }
+
+  #nav {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .login-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    z-index: 2000;
+  }
+
+  .login-modal.show {
+    display: grid;
+  }
+
+  .login-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 8, 15, 0.72);
+    backdrop-filter: blur(4px);
+  }
+
+  .login-modal-content {
+    position: relative;
+    z-index: 1;
+    width: min(420px, calc(100vw - 30px));
+    background: rgba(9, 13, 22, 0.98);
+    border: 1px solid rgba(124, 183, 255, 0.22);
+    border-radius: 18px;
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.42);
+    padding: 28px 22px 20px;
+    color: #edf3ff;
+  }
+
+  .login-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(148, 163, 184, 0.1);
+    color: #edf3ff;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .login-modal-content h2 {
+    margin: 0 0 18px;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .login-modal-content input {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(15, 23, 42, 0.9);
+    color: #edf3ff;
+    font-size: 0.96rem;
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .primary-btn {
+    margin-top: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 16px;
+    background: linear-gradient(135deg, #7cb7ff, #2563eb);
+    color: white;
+    font-weight: 700;
+    font-size: 0.96rem;
+    cursor: pointer;
+  }
+
+  .login-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 20px 0 14px;
+    color: rgba(203, 213, 225, 0.75);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .login-divider::before,
+  .login-divider::after {
+    content: "";
+    height: 1px;
+    background: rgba(148, 163, 184, 0.25);
+    flex: 1;
+  }
+
+  .google-signin-wrap {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .user-login-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(124, 183, 255, 0.4);
+    background: rgba(124, 183, 255, 0.1);
+    border-radius: 999px;
+    padding: 8px 12px;
+    max-width: 100%;
+  }
+
+  .user-login-pill img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 768px) {
+    #nav {
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      padding: 14px 0 0;
+      gap: 10px;
+    }
+
+    #nav.open {
+      display: flex;
+    }
+
+    #nav > * {
+      width: 100%;
+      text-align: left;
+    }
+
+    .login-menu-btn {
+      margin-left: 0;
+      order: -1;
+      width: 100%;
+    }
+
+    .login-btn {
+      justify-content: center;
+    }
+  }
 </style>
 
 <script>
   const BACKEND_URL = 'https://test0001-abidemon0242s-projects.vercel.app/api/chat';
+  const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+  const USER_STORAGE_KEY = 'webstudioUser';
 
   function appendMessage(text, sender) {
     const messages = document.getElementById('messages');
@@ -456,30 +667,198 @@
     }
   }
 
+  function openLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (!modal) return;
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (!modal) return;
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function updateLoginUI(user) {
+    const loginBtn = document.getElementById('loginBtn');
+    if (!loginBtn) return;
+
+    if (!user) {
+      loginBtn.textContent = 'Login';
+      loginBtn.classList.remove('logged-in');
+      loginBtn.onclick = function () {
+        openLoginModal();
+      };
+      return;
+    }
+
+    loginBtn.classList.add('logged-in');
+    loginBtn.innerHTML = `
+      <span class="user-login-pill">
+        <img src="${user.picture || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || 'User') + '&background=2563eb&color=fff'}" alt="${user.name || 'User'} avatar" />
+        <span>${user.name ? user.name.split(' ')[0] : 'Profile'}</span>
+      </span>
+    `;
+
+    loginBtn.onclick = function () {
+      localStorage.removeItem(USER_STORAGE_KEY);
+      updateLoginUI(null);
+    };
+  }
+
+  function parseJwtToken(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+      return JSON.parse(atob(padded));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function handleCredentialResponse(response) {
+    const payload = parseJwtToken(response.credential);
+    if (!payload) {
+      return;
+    }
+
+    const user = {
+      name: payload.name || payload.given_name || 'Google User',
+      email: payload.email || '',
+      picture: payload.picture || '',
+      sub: payload.sub || '',
+      given_name: payload.given_name || ''
+    };
+
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    updateLoginUI(user);
+    closeLoginModal();
+  }
+
+  function initGoogleSignIn() {
+    const target = document.getElementById('googleSignInBtn');
+    if (!target || !window.google || !window.google.accounts || !window.google.accounts.id) {
+      return;
+    }
+
+    try {
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse
+      });
+
+      window.google.accounts.id.renderButton(target, {
+        theme: 'outline',
+        size: 'large',
+        width: '100%',
+        type: 'standard',
+        text: 'signin_with',
+        shape: 'pill'
+      });
+    } catch (error) {
+      console.warn('Google Sign-In initialization failed:', error);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     const chatBox = document.getElementById('chat-box');
     const toggleBtn = document.getElementById('chat-toggle');
     const closeBtn = document.getElementById('chat-close');
     const sendBtn = document.getElementById('chat-send');
     const input = document.getElementById('user-input');
+    const loginBtn = document.getElementById('loginBtn');
+    const closeLoginModalBtn = document.getElementById('closeLoginModal');
+    const emailContinueBtn = document.getElementById('emailContinueBtn');
+    const modal = document.getElementById('loginModal');
+    const nav = document.getElementById('nav');
+    const burger = document.getElementById('burger');
 
-    chatBox.classList.add('hidden');
+    if (burger && nav) {
+      burger.addEventListener('click', function () {
+        const isOpen = nav.classList.toggle('open');
+        burger.setAttribute('aria-expanded', String(isOpen));
+      });
+    }
 
-    toggleBtn.addEventListener('click', function () {
-      toggleChat();
-    });
-
-    closeBtn.addEventListener('click', function () {
-      toggleChat(false);
-    });
-
-    sendBtn.addEventListener('click', sendMessage);
-
-    input.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        sendMessage();
+    if (loginBtn) {
+      const savedUser = localStorage.getItem(USER_STORAGE_KEY);
+      if (savedUser) {
+        try {
+          updateLoginUI(JSON.parse(savedUser));
+        } catch (error) {
+          localStorage.removeItem(USER_STORAGE_KEY);
+          updateLoginUI(null);
+        }
+      } else {
+        updateLoginUI(null);
       }
-    });
+    }
+
+    if (modal) {
+      modal.addEventListener('click', function (event) {
+        if (event.target && event.target.dataset && event.target.dataset.close === 'true') {
+          closeLoginModal();
+        }
+      });
+    }
+
+    if (closeLoginModalBtn) {
+      closeLoginModalBtn.addEventListener('click', closeLoginModal);
+    }
+
+    if (emailContinueBtn) {
+      emailContinueBtn.addEventListener('click', function () {
+        const emailInput = document.getElementById('userEmail');
+        if (!emailInput) return;
+        const emailValue = emailInput.value.trim();
+        if (!emailValue) {
+          emailInput.focus();
+          return;
+        }
+
+        const user = {
+          name: emailValue.split('@')[0],
+          email: emailValue,
+          picture: '',
+          sub: 'email-user'
+        };
+
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+        updateLoginUI(user);
+        closeLoginModal();
+      });
+    }
+
+    if (chatBox) {
+      chatBox.classList.add('hidden');
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function () {
+        toggleChat();
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        toggleChat(false);
+      });
+    }
+
+    if (sendBtn) {
+      sendBtn.addEventListener('click', sendMessage);
+    }
+
+    if (input) {
+      input.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          sendMessage();
+        }
+      });
+    }
 
     const welcome = 'Hi! I can help with website packages, pricing, timelines, and your project idea. Ask me anything.';
     appendMessage(welcome, 'bot');
@@ -489,6 +868,8 @@
         toggleChat(true);
       }
     }, 1800);
+
+    initGoogleSignIn();
   });
 </script>
 
