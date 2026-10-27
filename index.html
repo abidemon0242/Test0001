@@ -19,7 +19,7 @@
 <body>
 
 <!-- LOGO: defined once here and reused with <use href="#mark">. Edit this symbol to change the logo. -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7cb7ff"/><stop offset="1" stop-color="#2563eb"/><stop[...]
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7cb7ff"/><stop offset="1" stop-color="#2563eb"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs></svg>
 
 <!-- INTRO: ends by itself after ~3s, can be skipped, and is removed for reduced-motion users (see main.js) -->
 <div id="intro">
@@ -57,7 +57,7 @@
           <a class="btn" href="#order" data-i18n="cta_order">Order a Website</a>
           <a class="btn ghost" href="#projects" data-i18n="cta_work">View My Work</a>
         </div>
-        <p class="mini rv d3"><span data-i18n="or">Or reach me directly:</span> <a data-c="call" data-i18n="call">Call</a> <a data-c="wa" target="_blank" rel="noopener" data-i18n="wa">WhatsApp</a> <a[...] 
+        <p class="mini rv d3"><span data-i18n="or">Or reach me directly:</span> <a data-c="call" data-i18n="call">Call</a> <a data-c="wa" target="_blank" rel="noopener" data-i18n="wa">WhatsApp</a></p>
         <p class="pill rv d3" data-i18n="pill">Introductory pricing available</p>
       </div>
       <div class="stack" id="hstack" aria-hidden="true"></div>
@@ -287,7 +287,7 @@
     height: 8px;
     border-radius: 50%;
     background: #7cb7ff;
-    box-shadow: 0 0 12px rgba(124, 183, 255, 0.9);
+    box-shadow: 0 0 15px rgba(124, 183, 255, 0.9);
     animation: blink 1s ease-in-out infinite;
   }
 
@@ -386,6 +386,20 @@
     loading.style.display = isLoading ? 'inline-flex' : 'none';
   }
 
+  function getLocalReply(message) {
+    const msg = message.toLowerCase();
+    if (msg.includes('price') || msg.includes('cost') || msg.includes('how much')) {
+      return 'Basic 1-page websites start around 2,500 BDT. Standard sites with chatbot are 5,000–7,000 BDT. Advanced custom sites are 7,000–9,500 BDT. Final price depends on your requirements.';
+    }
+    if (msg.includes('package') || msg.includes('service')) {
+      return 'We offer business websites, portfolios, landing pages, e-commerce, restaurant sites, and fully custom projects. Which type are you looking for?';
+    }
+    if (msg.includes('order') || msg.includes('buy') || msg.includes('start')) {
+      return 'You can fill the order form on this page or contact me on WhatsApp/email. I’ll review your idea and confirm the price.';
+    }
+    return 'I can help with website packages, pricing, timelines, and ordering. What would you like to know?';
+  }
+
   function toggleChat(forceOpen) {
     const chatBox = document.getElementById('chat-box');
     const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : chatBox.classList.contains('hidden');
@@ -421,6 +435,10 @@
         body: JSON.stringify({ message: text })
       });
 
+      if (!res.ok) {
+        throw new Error(`Backend error: ${res.status}`);
+      }
+
       const data = await res.json();
       const reply = data.reply || data.response || data.answer || 'Sorry, I could not process that request.';
 
@@ -433,7 +451,8 @@
       if (loading && loading.parentNode) {
         loading.parentNode.removeChild(loading);
       }
-      appendMessage('I could not reach the chat service right now. Please try again in a moment.', 'bot');
+      const localReply = getLocalReply(text);
+      appendMessage(localReply, 'bot');
     }
   }
 
