@@ -51,6 +51,7 @@
   <div class="login-modal-content" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
     <button id="closeLoginModal" class="login-modal-close" type="button" aria-label="Close login modal">×</button>
     <h2 id="loginModalTitle">Sign In / Log In</h2>
+    <p id="authStatus" role="status" aria-live="polite" hidden></p>
     <label class="sr-only" for="userEmail">Email</label>
     <input type="email" id="userEmail" placeholder="Enter your email" />
     <button type="button" class="primary-btn" id="emailContinueBtn">Continue with Email</button>
@@ -884,5 +885,6 @@
 <script src="language.js" defer></script>
 <script src="order.js" defer></script>
 <script src="main.js" defer></script>
+  <script type="module" src="./auth.js"></script>
 </body>
 </html>
