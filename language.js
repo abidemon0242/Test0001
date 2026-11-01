@@ -1,112 +1,190 @@
-/* language.js: small helpers + ALL site text in English and Bangla.
-   To change wording, edit the strings below. Every key should exist in "en" (it is the fallback). */
-const $ = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+/* Abid's Web Studio. Design tokens first: edit :root to re-theme the whole site. */
+:root{--bg:#060b16;--bg2:#0a1222;--surf:rgba(255,255,255,.045);--line:rgba(148,178,255,.16);--blue:#3b82f6;--blue2:#7cb7ff;--tx:#eaf0ff;--mut:#9aa9c8;--sh:0 24px 60px -28px rgba(0,0,0,.85);--r:14px;--gap:clamp(70px,12vw,120px);--f:"Manrope","Segoe UI",sans-serif;--serif:"Fraunces","Georgia",serif}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--f);overflow-x:hidden}
+body.lock{overflow:hidden}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--blue2);outline-offset:3px}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}.narrow{width:min(760px,100% - 40px)}
+h1,h2,h3,h4{line-height:1.15;letter-spacing:-.02em}
+h2{font-size:clamp(1.8rem,4.6vw,2.8rem);margin-bottom:12px}h3{font-size:1.15rem}h4{font-size:1rem;margin-bottom:6px}
+html[lang=bn] body{line-height:1.85}html[lang=bn] :is(h1,h2,h3,h4){line-height:1.4;letter-spacing:0}
+.sub2{color:var(--mut);max-width:60ch}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.28em;color:var(--blue2);margin-bottom:18px}
 
-const I18N = {
-en: {
-  n_home:"Home", n_projects:"Projects", n_services:"Services", n_about:"About", n_contact:"Contact", cta_order:"Order a Website", skip:"Skip intro",
-  pill:"Introductory pricing available",
-  h1a:"Modern Websites.", h1b:"Built For Your Ideas.",
-  lead:"I design and build modern, responsive websites for individuals, businesses, creators and new projects.",
-  cta_work:"View My Work", or:"Or reach me directly:", call:"Call", wa:"WhatsApp", mail:"Email",
-  /* Projects */
-  pj_t:"Design Demonstrations", pj_s:"Concept designs that show the range of websites I can build. They are demonstrations, not client work.",
-  demo:"Demo Concept", similar:"Discuss a Similar Website",
-  t_business:"Business Website", t_portfolio:"Portfolio Website", t_restaurant:"Restaurant Website", t_ecommerce:"E-commerce Website", t_education:"Education Website",
-  t_hotel:"Hotel / Travel Website", t_realestate:"Real Estate Website", t_landing:"Landing Page", t_tech:"Technology / Startup", other:"Other",
-  d_m1:"Warm, elegant, menu-first design with a table request.",
-  d_m2:"Clean, bright storefront that puts products first.",
-  d_m3:"Bold dark startup page with a strong call to action.",
-  d_m4:"Immersive, photo-led design with a booking bar.",
-  d_m5:"Minimal editorial style that lets the work speak.",
-  /* Features (used in demos, services and the order form) */
-  f_resp:"Responsive design", f_form:"Contact form", f_gallery:"Gallery", f_product:"Product section", f_booking:"Booking / request section",
-  f_blog:"Blog / news section", f_anim:"Animation", f_theme:"Dark / light theme", f_custom:"Custom design",
-  /* Services */
-  sv_t:"Services", sv_s:"Website design and development only, not payment processing or hosting. Pricing depends on your requirements.", sv_cta:"Discuss this service",
-  sd_business:"A professional site that presents your business clearly.", sf_business:"Best for: shops, firms, local services",
-  sd_portfolio:"A personal site that shows your work and story.", sf_portfolio:"Best for: freelancers, creators, students",
-  sd_landing:"One focused page built around a single action.", sf_landing:"Best for: launches, events, offers",
-  sd_ecommerce:"Store-style design that presents your products well.", sf_ecommerce:"Best for: small brands and sellers",
-  sd_restaurant:"Menu, gallery and table-request layout.", sf_restaurant:"Best for: cafes, restaurants, bakeries",
-  sd_custom:"A unique design shaped around your own idea.", sf_custom:"Best for: anything that needs its own identity",
-  /* About */
-  ab_t:"Building Modern Websites, One Project at a Time",
-  ab_p1:"I'm a web developer focused on creating modern, responsive and practical websites for individuals, businesses and new ideas.",
-  ab_p2:"As an independent developer at the beginning of my professional journey, I work closely with every client personally. A website should not only look good. It should represent the person or business behind it, communicate clearly and give visitors a smooth experience.",
-  why_t:"Why Work With Me?",
-  w1t:"Personal Attention", w1:"Your project isn't passed between a large team. You talk directly with me throughout the process.",
-  w2t:"Modern & Customized", w2:"Each project is built around your requirements, so it can have its own identity.",
-  w3t:"Introductory Pricing", w3:"I'm building my portfolio, so introductory pricing is available for a limited time. Regular pricing may increase as my experience and demand grow.",
-  w4t:"Focused on Growth", w4:"Every project helps me improve. My goal is to build strong skills and deliver genuinely useful websites.",
-  /* Order form */
-  or_t:"Order a Website", or_s:"Tell me what you need. No payment is taken online. Price and next steps are discussed with you directly.",
-  f_type:"Website type", f_feat:"Features you want", f_desc:"Describe what you want", f_name:"Name", f_phone:"Phone number", f_wa:"WhatsApp number",
-  f_mail:"Email", f_pref:"Preferred contact method", f_extra:"Additional information",
-  f_review:"Review my request", rv_t:"Review your request", f_edit:"Edit", f_send:"Send request", sending:"Sending…",
-  e_req:"This field is required.", e_mail:"Enter a valid email address.", e_ct:"Give at least one way to contact you.",
-  done_t:"Thanks for your request. I'll review your requirements and contact you to discuss the project, pricing, and next steps.",
-  nocfg:"The online form isn't connected yet. Please send this request by WhatsApp or Email instead.",
-  e_net:"Could not send. Please use the WhatsApp or Email buttons below.",
-  /* Contact + footer */
-  ct_t:"Have an Idea?", ct_s:"Whether you have a full plan or only a basic idea, let's talk about requirements, design, features, timeline and budget before you decide. Final pricing is agreed directly with me.",
-  ft_d:"Independent web developer creating modern, responsive websites.", rights:"All rights reserved."
-},
-bn: {
-  n_home:"হোম", n_projects:"প্রজেক্ট", n_services:"সেবা", n_about:"পরিচিতি", n_contact:"যোগাযোগ", cta_order:"ওয়েবসাইট অর্ডার করুন", skip:"ইন্ট্রো বাদ দিন",
-  pill:"এখন ইন্ট্রোডাক্টরি প্রাইসিং চলছে",
-  h1a:"আধুনিক ওয়েবসাইট।", h1b:"আপনার আইডিয়ার জন্য তৈরি।",
-  lead:"ব্যক্তি, ব্যবসা, ক্রিয়েটর ও নতুন প্রজেক্টের জন্য আমি আধুনিক ও রেসপনসিভ ওয়েবসাইট ডিজাইন ও ডেভেলপ করি।",
-  cta_work:"আমার কাজ দেখুন", or:"অথবা সরাসরি যোগাযোগ করুন:", call:"কল", wa:"হোয়াটসঅ্যাপ", mail:"ইমেইল",
-  pj_t:"ডিজাইন ডেমো", pj_s:"আমি কী ধরনের ওয়েবসাইট বানাতে পারি তা দেখানোর কনসেপ্ট ডিজাইন। এগুলো ক্লায়েন্টের কাজ নয়, শুধু ডেমো।",
-  demo:"ডেমো কনসেপ্ট", similar:"অনুরূপ ওয়েবসাইট নিয়ে কথা বলুন",
-  t_business:"ব্যবসায়িক ওয়েবসাইট", t_portfolio:"পোর্টফোলিও ওয়েবসাইট", t_restaurant:"রেস্টুরেন্ট ওয়েবসাইট", t_ecommerce:"ই-কমার্স ওয়েবসাইট", t_education:"শিক্ষামূলক ওয়েবসাইট",
-  t_hotel:"হোটেল / ট্রাভেল ওয়েবসাইট", t_realestate:"রিয়েল এস্টেট ওয়েবসাইট", t_landing:"ল্যান্ডিং পেজ", t_tech:"টেকনোলজি / স্টার্টআপ", other:"অন্যান্য",
-  d_m1:"উষ্ণ ও মার্জিত, মেনু-কেন্দ্রিক ডিজাইন; টেবিল রিকোয়েস্টসহ।",
-  d_m2:"পণ্যকে সামনে রাখা পরিচ্ছন্ন ও উজ্জ্বল স্টোরফ্রন্ট।",
-  d_m3:"শক্তিশালী কল-টু-অ্যাকশনসহ গাঢ় স্টার্টআপ পেজ।",
-  d_m4:"ছবি-নির্ভর আকর্ষণীয় ডিজাইন; বুকিং বারসহ।",
-  d_m5:"মিনিমাল এডিটোরিয়াল স্টাইল, যেখানে কাজই কথা বলে।",
-  f_resp:"রেসপনসিভ ডিজাইন", f_form:"কন্টাক্ট ফর্ম", f_gallery:"গ্যালারি", f_product:"প্রোডাক্ট সেকশন", f_booking:"বুকিং / রিকোয়েস্ট সেকশন",
-  f_blog:"ব্লগ / নিউজ সেকশন", f_anim:"অ্যানিমেশন", f_theme:"ডার্ক / লাইট থিম", f_custom:"কাস্টম ডিজাইন",
-  sv_t:"সেবাসমূহ", sv_s:"শুধু ওয়েবসাইট ডিজাইন ও ডেভেলপমেন্ট; পেমেন্ট প্রসেসিং বা হোস্টিং নয়। মূল্য আপনার চাহিদার ওপর নির্ভর করে।", sv_cta:"এই সেবা নিয়ে কথা বলুন",
-  sd_business:"আপনার ব্যবসাকে স্পষ্টভাবে তুলে ধরার পেশাদার সাইট।", sf_business:"উপযোগী: দোকান, প্রতিষ্ঠান, স্থানীয় সেবা",
-  sd_portfolio:"আপনার কাজ ও পরিচয় দেখানোর ব্যক্তিগত সাইট।", sf_portfolio:"উপযোগী: ফ্রিল্যান্সার, ক্রিয়েটর, শিক্ষার্থী",
-  sd_landing:"একটি নির্দিষ্ট কাজের জন্য ফোকাসড এক-পেজ সাইট।", sf_landing:"উপযোগী: লঞ্চ, ইভেন্ট, অফার",
-  sd_ecommerce:"পণ্য সুন্দরভাবে দেখানোর স্টোর-স্টাইল ডিজাইন।", sf_ecommerce:"উপযোগী: ছোট ব্র্যান্ড ও বিক্রেতা",
-  sd_restaurant:"মেনু, গ্যালারি ও টেবিল-রিকোয়েস্ট লেআউট।", sf_restaurant:"উপযোগী: ক্যাফে, রেস্টুরেন্ট, বেকারি",
-  sd_custom:"আপনার নিজস্ব আইডিয়া অনুযায়ী অনন্য ডিজাইন।", sf_custom:"উপযোগী: নিজস্ব পরিচয় দরকার এমন যেকোনো কাজ",
-  ab_t:"একেকটি প্রজেক্টে গড়ে তুলছি আধুনিক ওয়েবসাইট",
-  ab_p1:"আমি একজন ওয়েব ডেভেলপার; ব্যক্তি, ব্যবসা ও নতুন আইডিয়ার জন্য আধুনিক, রেসপনসিভ ও ব্যবহারযোগ্য ওয়েবসাইট তৈরি করি।",
-  ab_p2:"পেশাদার যাত্রার শুরুতে থাকা স্বাধীন ডেভেলপার হিসেবে আমি প্রত্যেক ক্লায়েন্টের সঙ্গে ব্যক্তিগতভাবে কাজ করি। ওয়েবসাইট শুধু সুন্দর দেখালেই হয় না; এটি ব্যক্তি বা ব্যবসাকে তুলে ধরবে, স্পষ্টভাবে কথা বলবে এবং ভিজিটরকে সহজ অভিজ্ঞতা দেবে।",
-  why_t:"কেন আমার সঙ্গে কাজ করবেন?",
-  w1t:"ব্যক্তিগত মনোযোগ", w1:"আপনার প্রজেক্ট বড় টিমের হাতে হাতে ঘোরে না। পুরো সময় সরাসরি আমার সঙ্গে কথা বলতে পারবেন।",
-  w2t:"আধুনিক ও কাস্টমাইজড", w2:"প্রতিটি প্রজেক্ট আপনার চাহিদা অনুযায়ী তৈরি, তাই প্রত্যেকটির নিজস্ব পরিচয় থাকে।",
-  w3t:"ইন্ট্রোডাক্টরি প্রাইসিং", w3:"আমি এখন পোর্টফোলিও তৈরি করছি, তাই সীমিত সময়ের জন্য ইন্ট্রোডাক্টরি প্রাইসিং আছে। অভিজ্ঞতা ও চাহিদা বাড়লে নিয়মিত মূল্য বাড়তে পারে।",
-  w4t:"উন্নতির দিকে মনোযোগ", w4:"প্রতিটি প্রজেক্ট আমাকে আরও ভালো করে। লক্ষ্য হলো দক্ষতা বাড়ানো এবং সত্যিই কাজে লাগে এমন ওয়েবসাইট দেওয়া।",
-  or_t:"ওয়েবসাইট অর্ডার করুন", or_s:"আপনার প্রয়োজন জানান। অনলাইনে কোনো পেমেন্ট নেওয়া হয় না; মূল্য ও পরবর্তী ধাপ সরাসরি আলোচনা করে ঠিক হবে।",
-  f_type:"ওয়েবসাইটের ধরন", f_feat:"যেসব ফিচার চান", f_desc:"আপনি কী চান লিখুন", f_name:"নাম", f_phone:"ফোন নম্বর", f_wa:"হোয়াটসঅ্যাপ নম্বর",
-  f_mail:"ইমেইল", f_pref:"পছন্দের যোগাযোগ মাধ্যম", f_extra:"অতিরিক্ত তথ্য",
-  f_review:"অনুরোধ যাচাই করুন", rv_t:"আপনার অনুরোধ দেখে নিন", f_edit:"সম্পাদনা", f_send:"অনুরোধ পাঠান", sending:"পাঠানো হচ্ছে…",
-  e_req:"এই ঘরটি পূরণ করুন।", e_mail:"সঠিক ইমেইল ঠিকানা দিন।", e_ct:"যোগাযোগের অন্তত একটি উপায় দিন।",
-  done_t:"আপনার অনুরোধের জন্য ধন্যবাদ। আমি আপনার চাহিদা দেখে প্রজেক্ট, মূল্য ও পরবর্তী ধাপ নিয়ে আলোচনার জন্য যোগাযোগ করব।",
-  nocfg:"অনলাইন ফর্ম এখনো যুক্ত হয়নি। অনুগ্রহ করে অনুরোধটি হোয়াটসঅ্যাপ বা ইমেইলে পাঠান।",
-  e_net:"পাঠানো যায়নি। অনুগ্রহ করে নিচের হোয়াটসঅ্যাপ বা ইমেইল ব্যবহার করুন।",
-  ct_t:"আপনার কোনো আইডিয়া আছে?", ct_s:"পুরো পরিকল্পনা থাকুক বা শুধু একটি ধারণা, সিদ্ধান্তের আগে চাহিদা, ডিজাইন, ফিচার, সময় ও বাজেট নিয়ে কথা বলি। চূড়ান্ত মূল্য সরাসরি আমার সঙ্গে ঠিক হবে।",
-  ft_d:"আধুনিক ও রেসপনসিভ ওয়েবসাইট তৈরি করেন এমন স্বাধীন ওয়েব ডেভেলপার।", rights:"সর্বস্বত্ব সংরক্ষিত।"
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:13px 26px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff;font-weight:700;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 16px 36px -12px rgba(59,130,246,.9)}
+.btn.ghost{background:transparent;box-shadow:none;color:inherit;border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--blue2);background:rgba(59,130,246,.1)}
+.btn.sm{min-height:42px;padding:9px 18px;font-size:.92rem}
+.btn:disabled{opacity:.6;cursor:wait}
+
+/* Header + navigation */
+header{position:sticky;top:0;z-index:50;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+header.sc{background:rgba(6,11,22,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em}.brand b{color:var(--blue2)}
+#nav{display:flex;align-items:center;gap:26px}
+#nav a:not(.btn){color:var(--mut);font-size:.95rem;transition:color .2s}#nav a:not(.btn):hover{color:#fff}
+#lang{background:none;border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:6px 12px;min-height:40px;cursor:pointer;font:inherit;font-size:.9rem}
+#lang:hover{border-color:var(--blue2)}
+#burger{display:none;background:none;border:0;width:46px;height:46px;cursor:pointer}
+#burger i{display:block;width:22px;height:2px;background:#fff;margin:5px auto;transition:transform .25s,opacity .25s}
+#burger[aria-expanded=true] i:nth-child(1){transform:translateY(7px) rotate(45deg)}
+#burger[aria-expanded=true] i:nth-child(2){opacity:0}
+#burger[aria-expanded=true] i:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media(max-width:860px){
+  #burger{display:block}
+  #nav{position:fixed;inset:68px 0 auto;flex-direction:column;align-items:stretch;gap:4px;padding:16px 20px 24px;background:rgba(8,14,28,.98);border-bottom:1px solid var(--line);opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .2s ease,visibility .2s ease,transform .2s ease}
+  #nav.open{opacity:1;visibility:visible;transform:none}
+  #nav a:not(.btn){padding:14px 4px;font-size:1.05rem;border-bottom:1px solid var(--line)}
+  #lang{margin:10px 0 6px}
 }
-};
 
-let LANG = "en";
-const t = k => (I18N[LANG] && I18N[LANG][k]) || I18N.en[k] || k;
+/* Hero */
+.hero{position:relative;min-height:100svh;margin-top:-68px;padding:130px 0 90px;display:grid;align-items:center;overflow:hidden}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;pointer-events:none;animation:drift 20s ease-in-out infinite alternate}
+.hero::before{width:60vmax;height:60vmax;left:-22vmax;top:-26vmax;background:radial-gradient(closest-side,rgba(59,130,246,.3),transparent)}
+.hero::after{width:44vmax;height:44vmax;right:-16vmax;bottom:-20vmax;background:radial-gradient(closest-side,rgba(37,99,235,.24),transparent);animation-direction:alternate-reverse}
+.glow{position:absolute;inset:0;opacity:.6;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(circle at center,black 10%,transparent 82%);mask-image:radial-gradient(circle at center,black 10%,transparent 82%)}
+.hero .wrap{position:relative}
+.hgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(2.5rem,7.4vw,4.8rem);font-weight:800;letter-spacing:-.035em}
+.hero h1 span{display:block}
+.hero h1 span+span{background:linear-gradient(90deg,#fff,var(--blue2) 75%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{max-width:52ch;color:var(--mut);font-size:clamp(1.02rem,2.2vw,1.2rem);margin:22px 0 32px}
+.cta{display:flex;flex-wrap:wrap;gap:14px}
+.mini{margin-top:26px;color:var(--mut);font-size:.95rem}
+.mini a{color:var(--blue2);margin-left:14px;text-decoration:underline;text-underline-offset:4px}
+.pill{display:inline-block;margin-top:20px;font-size:.85rem;padding:6px 14px;border:1px solid var(--line);border-radius:999px;color:#cfe1ff;background:var(--surf)}
+.stack{position:relative;height:340px}
+.stack .mock{position:absolute;width:78%;box-shadow:var(--sh)}
+.stack .mock:nth-child(1){left:0;top:0}.stack .mock:nth-child(2){right:0;top:90px}.stack .mock:nth-child(3){left:12%;bottom:0}
+@keyframes drift{to{transform:translate(7vmax,5vmax)}}
+@media(max-width:900px){.hgrid{grid-template-columns:1fr}.stack{display:none}}
 
-/* Fills every element that has data-i18n="key", updates <html lang>, remembers the choice. */
-function applyLang(l) {
-  LANG = I18N[l] ? l : "en";
-  try { localStorage.setItem("lang", LANG); } catch (e) {}
-  document.documentElement.lang = LANG;
-  $$("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
-  $("#lang").textContent = LANG === "en" ? "বাংলা" : "English";
-  document.dispatchEvent(new Event("langchange"));
+/* Sections, cards */
+.sec{padding:var(--gap) 0}.alt{background:var(--bg2)}
+.light{background:#f2f5fb;color:#0b1324;--surf:#fff;--line:rgba(11,19,36,.12);--mut:#4a5877;--blue2:#1d4ed8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:22px;margin-top:40px}
+.card{display:flex;flex-direction:column;gap:10px;padding:20px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r)}
+.card:hover{translate:0 -4px;border-color:var(--blue2)}
+.light .card{box-shadow:0 14px 34px -22px rgba(11,19,36,.4)}
+.card p{color:var(--mut);font-size:.95rem}
+.card .cat{color:var(--blue2);font-weight:600;font-size:.88rem}
+.card .for{font-size:.88rem}
+.card .btn{margin-top:auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:2px 0 8px}
+.chips li{font-size:.76rem;padding:4px 10px;border-radius:999px;background:rgba(59,130,246,.14);color:var(--blue2)}
+
+/* Reveal on scroll (added by main.js). Only runs when JS is available. */
+.js .rv{opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease,translate .3s,border-color .3s}
+.js .rv.in{opacity:1;transform:none}
+.js .d1{transition-delay:.1s}.js .d2{transition-delay:.2s}.js .d3{transition-delay:.3s}
+
+/* Demo mockups: each one has its own colours, type and layout */
+.mock{position:relative;aspect-ratio:16/10;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.mock::before{content:"";position:absolute;inset:0 0 auto;height:15px;background:rgba(0,0,0,.4);z-index:2}
+.mock::after{content:"";position:absolute;left:7px;top:5px;width:5px;height:5px;border-radius:50%;background:#ff6b6b;box-shadow:9px 0 #ffd166,18px 0 #38d996;z-index:3}
+.tag{position:absolute;right:8px;top:21px;z-index:4;font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(6,11,22,.78);color:#cfe1ff}
+.scr{position:absolute;inset:15px 0 0;padding:14px;color:#fff}
+.scr h6{position:relative;font-size:1.1rem;font-weight:600;line-height:1.2;margin-bottom:6px}
+.scr i{display:block}
+.ln{height:5px;width:55%;margin-top:7px;border-radius:3px;background:currentColor;opacity:.32}.ln+.ln{width:38%}
+.bt{width:64px;height:18px;margin-top:12px;border-radius:5px}
+.m1 .scr{background:radial-gradient(circle at 78% 55%,#6b3213,#1a0d07 72%);color:#f2c48d;font-family:var(--serif)}
+.m1 .bt{background:#f2c48d}
+.m1 .pl{position:absolute;right:16px;top:30px;width:92px;height:92px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#f5cf9d,#b8642a 58%,#3d1d0c);box-shadow:0 0 0 9px rgba(242,196,141,.18)}
+.m2 .scr{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:12px 1fr 1fr;gap:7px;padding:10px;background:#fff}
+.m2 .bar{grid-column:1/-1;border-radius:3px;background:#0f766e}
+.m2 .t{border-radius:6px;background:linear-gradient(160deg,#fde68a,#f97316)}
+.m2 .t:nth-child(3n){background:linear-gradient(160deg,#a7f3d0,#0f766e)}.m2 .t:nth-child(3n+1){background:linear-gradient(160deg,#bfdbfe,#3b82f6)}
+.m3 .scr{background:#07070f}
+.m3 .scr::before{content:"";position:absolute;right:-40px;top:-30px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,#7c5cff,#2563eb 45%,transparent 70%);opacity:.75}
+.m3 h6{font-size:1.3rem;font-weight:700;letter-spacing:-.02em}
+.m3 .bt{position:relative;border-radius:999px;background:linear-gradient(90deg,#7c5cff,#2563eb)}
+.m3 .cd{position:absolute;left:14px;right:14px;bottom:12px;height:34px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14)}
+.m4 .scr{background:linear-gradient(#ffd8a8,#8ecdf5 48%,#0e7ab8 49%,#075985);font-family:var(--serif)}
+.m4 .sun{position:absolute;right:28px;top:26px;width:34px;height:34px;border-radius:50%;background:#fff6d6;box-shadow:0 0 30px #fff3bf}
+.m4 .bk{position:absolute;left:14px;right:14px;bottom:12px;height:30px;border-radius:8px;background:rgba(255,255,255,.92)}
+.m4 .bk::after{content:"";position:absolute;right:4px;top:4px;bottom:4px;width:60px;border-radius:5px;background:#0b6fa4}
+.m5 .scr{background:#efe9dc;color:#161616;font-family:var(--serif)}
+.m5 h6{font-size:1.9rem;line-height:1}
+.m5 .th{position:absolute;bottom:12px;border-radius:2px}
+.m5 .th:nth-child(3){left:14px;width:88px;height:52px;background:#161616}
+.m5 .th:nth-child(4){left:112px;width:56px;height:38px;background:#c2410c}
+.m5 .th:nth-child(5){left:178px;width:70px;height:60px;background:#b8b2a3}
+
+/* About */
+.abt{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(32px,6vw,72px);align-items:start}
+.abt p{color:var(--mut);margin-top:14px}.abt h3{margin-bottom:16px}
+#why{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.abt{grid-template-columns:1fr}}
+@media(max-width:560px){#why{grid-template-columns:1fr}}
+
+/* Panels, order form */
+.panel{margin-top:32px;padding:clamp(20px,4vw,36px);border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.02));backdrop-filter:blur(12px)}
+#oform{display:grid;gap:20px}
+.fld>label,legend{display:block;font-size:.9rem;font-weight:600;margin-bottom:8px;color:#cfdaf5}
+input,select,textarea{width:100%;min-height:48px;padding:13px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--tx);font:inherit}
+select option{color:#0b1324}
+textarea{resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--blue2);outline-offset:1px}
+[aria-invalid=true]{border-color:#ff8a8a}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.feats{display:flex;flex-wrap:wrap;gap:10px;border:0;padding:0;min-width:0}.feats legend{width:100%;padding:0}
+.chk{position:relative;cursor:pointer}
+.chk input{position:absolute;opacity:0;width:1px;height:1px;min-height:0}
+.chk span{display:block;padding:9px 15px;border:1px solid var(--line);border-radius:999px;font-size:.9rem;transition:background .2s,border-color .2s}
+.chk input:checked+span{background:rgba(59,130,246,.24);border-color:var(--blue2)}
+.chk input:focus-visible+span{outline:2px solid var(--blue2);outline-offset:2px}
+.err{display:block;min-height:1.2em;margin-top:4px;color:#ff9d9d;font-size:.85rem}
+.acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+#sum{display:grid;grid-template-columns:max-content 1fr;gap:10px 18px;margin-top:18px}
+#sum dt{color:var(--mut);font-size:.9rem}#sum dd{overflow-wrap:anywhere;white-space:pre-line}
+#fb{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+#done{text-align:center;padding:16px 0}#done h3{font-size:2.4rem;color:var(--blue2);margin-bottom:8px}
+@media(max-width:640px){.two{grid-template-columns:1fr}#sum{grid-template-columns:1fr;gap:2px}#sum dd{margin-bottom:12px}}
+
+/* Contact */
+.cta-panel{margin-top:0;text-align:center;background:radial-gradient(120% 150% at 50% 0,rgba(59,130,246,.28),rgba(10,18,34,.92))}
+.cta-panel p{color:var(--mut);max-width:60ch;margin:0 auto 28px}
+.cbtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px}
+.cbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:92px;padding:18px;border:1px solid var(--line);border-radius:var(--r);background:rgba(6,11,22,.4)}
+.cbtn:hover{border-color:var(--blue2);translate:0 -3px}
+.cbtn span{color:var(--blue2);font-size:.9rem;font-weight:600}.cbtn b{font-size:1.05rem;overflow-wrap:anywhere}
+
+/* Footer */
+footer{padding:48px 0 24px;background:#03060d;border-top:1px solid var(--line);color:var(--mut);font-size:.92rem}
+.fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:32px}
+.fgrid p{margin-top:12px;max-width:36ch}
+.fl{display:flex;flex-direction:column;gap:8px}.fl a:hover{color:#fff}
+.copy{margin-top:32px;padding-top:20px;border-top:1px solid var(--line);font-size:.85rem}
+@media(max-width:700px){.fgrid{grid-template-columns:1fr}}
+
+/* Intro animation: a dark screen, the mark fades in with a blue light sweep, then it lifts away.
+   The CSS animation "out" hides it even if JavaScript fails. */
+#intro{position:fixed;inset:0;z-index:100;display:grid;place-content:center;justify-items:center;gap:20px;background:#03060d;transition:opacity .7s,visibility .7s;animation:out .7s ease 3.4s forwards}
+#intro.done{opacity:0;visibility:hidden}
+#intro::before{content:"";position:absolute;width:70vmin;height:70vmin;border-radius:50%;background:radial-gradient(closest-side,rgba(59,130,246,.35),transparent);animation:fade 2s ease both}
+#intro::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,var(--blue2),transparent);opacity:0;transform:scaleX(0);animation:sweep 1.1s ease-out .7s both}
+#intro .mk{position:relative;filter:drop-shadow(0 0 20px rgba(59,130,246,.6));animation:pop 1.1s cubic-bezier(.2,.8,.2,1) both}
+#intro .wm{position:relative;font-size:.85rem;font-weight:700;letter-spacing:.42em;opacity:0;animation:fade 1s ease .9s forwards}
+#intro .wm b{color:var(--blue2)}
+#skip{position:absolute;right:18px;bottom:18px;min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:none;color:var(--mut);font:inherit;font-size:.85rem;cursor:pointer}
+#skip:hover{color:#fff;border-color:var(--blue2)}
+@keyframes pop{from{opacity:0;transform:scale(.72)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes sweep{40%{opacity:.9;transform:scaleX(1)}to{opacity:0;transform:scaleX(1)}}
+@keyframes out{to{opacity:0;visibility:hidden}}
+
+/* Reduced motion: no intro, no drifting light, no reveals, instant scrolling */
+@media(prefers-reduced-motion:reduce){
+  *,::before,::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .js .rv{opacity:1;transform:none}
+  #intro{display:none}
 }
+
