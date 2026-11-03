@@ -578,7 +578,10 @@
 </style>
 
 <script>
-  const BACKEND_URL = 'https://test0001-abidemon0242s-projects.vercel.app/api/chat';
+  // Use the same Vercel deployment for the API. GitHub Pages uses the production Vercel API.
+  const BACKEND_URL = window.location.hostname.endsWith('github.io')
+    ? 'https://test0001-tau.vercel.app/api/chat'
+    : new URL('/api/chat', window.location.origin).toString();
 
   function appendMessage(text, sender) {
     const messages = document.getElementById('messages');
@@ -660,8 +663,8 @@
       if (loading && loading.parentNode) {
         loading.parentNode.removeChild(loading);
       }
-      const localReply = getLocalReply(text);
-      appendMessage(localReply, 'bot');
+      console.error('Chat API request failed:', error);
+      appendMessage('I could not connect to the AI assistant. Please try again shortly, or contact us through WhatsApp or email.', 'bot');
     }
   }
 
