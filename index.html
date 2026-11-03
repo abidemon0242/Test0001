@@ -647,11 +647,11 @@
         body: JSON.stringify({ message: text })
       });
 
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(`Backend error: ${res.status}`);
+        throw new Error(data.error || data.reply || `Chat service error: ${res.status}`);
       }
 
-      const data = await res.json();
       const reply = data.reply || data.response || data.answer || 'Sorry, I could not process that request.';
 
       if (loading && loading.parentNode) {
