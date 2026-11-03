@@ -664,7 +664,7 @@
         loading.parentNode.removeChild(loading);
       }
       console.error('Chat API request failed:', error);
-      appendMessage('I could not connect to the AI assistant. Please try again shortly, or contact us through WhatsApp or email.', 'bot');
+      appendMessage(`The AI assistant is temporarily unavailable. Here's what I can tell you: ${getLocalReply(text)}`, 'bot');
     }
   }
 
