@@ -8,6 +8,7 @@ export default async function handler(req, res) {
   const origin = req.headers.origin;
   const sameOrigin = Boolean(origin && req.headers.host && origin === `https://${req.headers.host}`);
   const originAllowed = !origin || ALLOWED_ORIGINS.has(origin) || sameOrigin;
+
   if (origin && originAllowed) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
@@ -17,42 +18,28 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'OPTIONS') {
-    if (!originAllowed) {
-      return res.status(403).json({ error: 'Origin not allowed.' });
-    }
+    if (!originAllowed) return res.status(403).json({ error: 'Origin not allowed.' });
     return res.status(204).end();
   }
-
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST, OPTIONS');
     return res.status(405).json({ error: 'Method not allowed.' });
   }
+  if (!originAllowed) return res.status(403).json({ error: 'Origin not allowed.' });
 
-  if (!originAllowed) {
-    return res.status(403).json({ error: 'Origin not allowed.' });
-  }
+  const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
+  if (!message) return res.status(400).json({ error: 'Please type a message first.' });
+  if (message.length > 2000) return res.status(413).json({ error: 'Please keep your message under 2,000 characters.' });
 
-  const message = typeof req.body?.message === 'string'
-    ? req.body.message.trim()
-    : '';
-
-  if (!message) {
-    return res.status(400).json({ error: 'Please type a message first.' });
-  }
-  if (message.length > 2000) {
-    return res.status(413).json({ error: 'Please keep your message under 2,000 characters.' });
-  }
-
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    console.error('Chat configuration error: OPENAI_API_KEY is not configured.');
-    return res.status(503).json({
-      error: 'The AI assistant is temporarily unavailable. Please contact us through WhatsApp or email.'
-    });
+    console.error('Chat configuration error: GEMINI_API_KEY is not configured.');
+    return res.status(503).json({ error: 'Gemini is not configured for this deployment.' });
   }
 
   const salesPrompt = `You are the helpful sales assistant for Abid's Web Studio in Bangladesh.
 Help visitors understand website services and submit an enquiry. Be concise, honest, and helpful.
+Services include business websites, portfolio websites, landing pages, e-commerce websites, restaurant websites, and custom design.
 Estimated packages:
 - Basic 1-page website: around 2,500 BDT.
 - Standard website with AI chatbot: 5,000-7,000 BDT.
@@ -64,21 +51,17 @@ Never invent deadlines, scarcity, guarantees, or customer testimonials. Ask one 
   const timeout = setTimeout(() => controller.abort(), 20000);
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`
+        'x-goog-api-key': apiKey
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: salesPrompt },
-          { role: 'user', content: message }
-        ],
-        temperature: 0.7,
-        max_tokens: 220
+        system_instruction: { parts: [{ text: salesPrompt }] },
+        contents: [{ role: 'user', parts: [{ text: message }] }],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 300 }
       })
     });
 
@@ -87,28 +70,32 @@ Never invent deadlines, scarcity, guarantees, or customer testimonials. Ask one 
     try { data = JSON.parse(raw); } catch {}
 
     if (!response.ok) {
-      // Log status and provider error code only; do not store visitors' messages or API credentials.
-      console.error('OpenAI request failed:', response.status, data?.error?.code || data?.error?.type || 'unknown');
+      const providerCode = data?.error?.status || data?.error?.code || 'unknown';
+      console.error('Gemini request failed:', response.status, providerCode);
       return res.status(response.status === 429 ? 429 : 502).json({
         error: response.status === 429
-          ? 'The AI assistant is busy. Please wait a moment and try again.'
-          : 'The AI assistant could not complete that request. Please try again shortly.'
+          ? 'Gemini is temporarily rate-limited. Please try again shortly.'
+          : 'Gemini could not complete that request. Please check the API configuration and try again.'
       });
     }
 
-    const reply = data?.choices?.[0]?.message?.content?.trim();
+    const reply = data?.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || '')
+      .join('')
+      .trim();
+
     if (!reply) {
-      console.error('OpenAI returned an empty response.');
-      return res.status(502).json({ error: 'The AI assistant returned an empty response. Please try again.' });
+      console.error('Gemini returned no text. Finish reason:', data?.candidates?.[0]?.finishReason || 'unknown');
+      return res.status(502).json({ error: 'Gemini returned an empty response. Please try again.' });
     }
 
     return res.status(200).json({ reply });
   } catch (error) {
-    console.error('Chat function request failed:', error?.name || 'UnknownError');
+    console.error('Gemini chat request failed:', error?.name || 'UnknownError');
     return res.status(error?.name === 'AbortError' ? 504 : 502).json({
       error: error?.name === 'AbortError'
-        ? 'The AI assistant took too long to respond. Please try again.'
-        : 'The AI assistant is temporarily unreachable. Please try again.'
+        ? 'Gemini took too long to respond. Please try again.'
+        : 'Gemini is temporarily unreachable. Please try again.'
     });
   } finally {
     clearTimeout(timeout);
