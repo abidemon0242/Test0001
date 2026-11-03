@@ -6,7 +6,9 @@ const ALLOWED_ORIGINS = new Set([
 
 export default async function handler(req, res) {
   const origin = req.headers.origin;
-  if (origin && ALLOWED_ORIGINS.has(origin)) {
+  const sameOrigin = Boolean(origin && req.headers.host && origin === `https://${req.headers.host}`);
+  const originAllowed = !origin || ALLOWED_ORIGINS.has(origin) || sameOrigin;
+  if (origin && originAllowed) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -15,7 +17,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'OPTIONS') {
-    if (origin && !ALLOWED_ORIGINS.has(origin)) {
+    if (!originAllowed) {
       return res.status(403).json({ error: 'Origin not allowed.' });
     }
     return res.status(204).end();
@@ -26,7 +28,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed.' });
   }
 
-  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+  if (!originAllowed) {
     return res.status(403).json({ error: 'Origin not allowed.' });
   }
 
