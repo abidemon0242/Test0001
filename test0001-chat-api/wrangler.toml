@@ -1,0 +1,9 @@
+name = "test0001-chat-api"
+main = "worker.js"
+compatibility_date = "2026-11-03"
+
+# Configure GEMINI_API_KEY as a Cloudflare secret.
+# Never place API keys in this file or commit them to GitHub.
+
+[observability]
+enabled = true
