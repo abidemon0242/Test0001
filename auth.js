@@ -1,6 +1,7 @@
 import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult,
+  browserLocalPersistence, setPersistence,
   sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
   onAuthStateChanged, signOut, updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -245,7 +246,10 @@ async function removeProfilePhoto() {
 
 async function handleGoogleSignIn() {
   hideMessage();
-  try { await signInWithRedirect(auth, googleProvider); }
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    await signInWithRedirect(auth, googleProvider);
+  }
   catch (error) { console.error(error); showMessage(error.message || "Google sign-in failed.", true); }
 }
 
@@ -277,6 +281,7 @@ async function completeEmailLinkSignIn() {
   if (!email) email = window.prompt("Enter the email address where you received the sign-in link:");
   if (!email) { showMessage("Email is required to finish signing in.", true); openLoginModal(); return; }
   try {
+    await setPersistence(auth, browserLocalPersistence);
     await signInWithEmailLink(auth, email.trim(), window.location.href);
     localStorage.removeItem(PENDING_EMAIL_KEY);
     window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
@@ -308,13 +313,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (event.target?.dataset?.close === "true") closeLoginModal();
   });
 
-  try { await getRedirectResult(auth); }
-  catch (error) { console.error(error); showMessage("Google sign-in did not complete. Please try again.", true); }
-
+  // Register the auth-state listener before processing redirect results so the
+  // navigation button always reflects Firebase's persisted signed-in state.
   onAuthStateChanged(auth, (user) => {
     updateLoginUI(user);
     if (user) closeLoginModal();
+  }, (error) => {
+    console.error("Firebase auth-state error:", error);
+    showMessage("Could not verify your sign-in state. Refresh and try again.", true);
   });
+
+  try { await getRedirectResult(auth); }
+  catch (error) { console.error(error); showMessage("Google sign-in did not complete. Please try again.", true); }
 
   try { await completeEmailLinkSignIn(); }
   catch (error) { console.error(error); }
