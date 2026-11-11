@@ -187,3 +187,17 @@ footer{padding:48px 0 24px;background:#03060d;border-top:1px solid var(--line);c
   .js .rv{opacity:1;transform:none}
   #intro{display:none}
 }
+
+
+/* Account profile and avatar editor */
+.account-profile{margin-top:20px;padding-top:18px;border-top:1px solid rgba(148,163,184,.2)}
+.profile-avatar-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:18px}
+#profileAvatar{width:104px;height:104px;border-radius:50%;object-fit:cover;border:3px solid rgba(124,183,255,.65);background:#172554}
+.profile-photo-label{display:inline-flex;align-items:center;justify-content:center;padding:8px 14px;border:1px solid rgba(124,183,255,.45);border-radius:999px;background:rgba(124,183,255,.12);color:#dbeafe;font-weight:700;font-size:.88rem;cursor:pointer}
+.profile-field-label{display:block;margin:0 0 7px;font-size:.9rem;font-weight:700;color:#cfe1ff}
+.profile-actions{display:grid;gap:9px;margin-top:12px}
+.profile-actions .primary-btn{margin-top:0}
+.profile-secondary-btn{width:100%;padding:11px 14px;border:1px solid rgba(148,163,184,.25);border-radius:11px;background:rgba(148,163,184,.08);color:#edf3ff;font:600 .92rem var(--f);cursor:pointer}
+.profile-secondary-btn:hover{border-color:rgba(124,183,255,.55)}
+.profile-secondary-btn:disabled,.profile-actions button:disabled{opacity:.6;cursor:wait}
+.profile-hint{margin-top:10px;color:#9aa9c8;font-size:.78rem;text-align:center}
