@@ -40,3 +40,20 @@ Never put an API key in these files: everything on GitHub Pages is public. Keep 
 
 ## Not included yet
 Separate pages (`projects.html` etc.), a Real Estate demo, an Open Graph preview image.
+
+
+## Firebase login and user profiles
+
+The website's `auth.js` supports Google sign-in, passwordless email-link sign-in, and a signed-in account panel. Users can edit their display name and upload, replace, or remove their profile picture. Profile documents are stored in Firestore at `users/{uid}`; custom profile images are stored at `users/{uid}/profile/avatar` in Firebase Storage.
+
+Before these features can work in production, complete these one-time Firebase Console steps for project `project-prototype-1-2d8d2`:
+
+1. In **Authentication → Sign-in method**, enable **Google** and **Email link (passwordless sign-in)**.
+2. In **Authentication → Settings → Authorized domains**, make sure `abidemon0242.github.io` is listed.
+3. Create a **Cloud Firestore** database.
+4. Create a **Firebase Storage** bucket.
+5. Publish the repository's `firestore.rules` in Firestore → Rules, and `storage.rules` in Storage → Rules. Do not leave test-mode rules enabled.
+
+The rules restrict each user to their own `users/{uid}` profile document and profile-image folder. Profile uploads are limited to PNG, JPG/JPEG, or WebP images up to 5 MB. The site is static GitHub Pages, so Firebase services and their security rules are configured separately in the Firebase Console; committing these rule files to GitHub does not publish them automatically.
+
+Email-link sign-in uses the current website URL as its completion URL. Test the full email-link flow on the deployed HTTPS website after enabling the providers and authorized domain.
